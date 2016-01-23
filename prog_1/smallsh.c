@@ -1,6 +1,42 @@
 #include "smallsh.h" /* include file for example */
 #include <stdlib.h>
 
+
+static struct sigaction act_int = {0};
+static struct sigaction act_chld = {0};
+static struct sigaction oact = {0};
+static sigset_t mask;
+
+static int is_int = 0;
+static int fg_count = 0;
+static int fg_pid = 0;
+
+
+
+void sigint_handler(int signo)
+{
+	is_int = 1;
+	char c,d;
+	
+	if(fg_count > 0)
+	{
+		printf("Are you sure you want to kill the child %d? (Y) ", fg_pid);
+		fflush(stdout);
+		c = getchar();
+		while(getchar() != '\n')
+			;
+		if(c == 'Y')
+		{
+			kill(fg_pid, SIGTERM);
+			is_int = 0;
+			fg_count = 0;
+		}
+	}
+
+} // sigint_handler
+
+
+
 /* program buffers and work pointers */
 static char inpbuf[MAXBUF], tokbuf[2*MAXBUF], *ptr = inpbuf, *tok = tokbuf;
 
@@ -15,10 +51,19 @@ char *p;
   /* display prompt */
   printf("%s ", p);
 
+	is_int = 0;
   for(count = 0;;){
     if((c = getchar()) == EOF)
-      return(EOF);
-
+		{
+			if(is_int)
+			{
+				printf("\n");
+				c = '\n';
+				is_int = 0;
+			}
+			else
+      	return(EOF);
+		}
     if(count < MAXBUF)
       inpbuf[count++] = c;
 
@@ -92,6 +137,10 @@ int where;
   }
 
   if(pid == 0){
+		sigemptyset(&mask);
+		sigaddset(&mask, SIGINT);
+		sigprocmask(SIG_BLOCK, &mask, NULL);
+
     execvp(*cline, cline);
     perror(*cline);
     exit(127);
@@ -103,11 +152,24 @@ int where;
     printf("[Process id %d]\n", pid);
     return(0);
   }
+	else
+	{
+		fg_count++;
+		fg_pid = pid;
+	}
 
+wait_more:
   /* wait until process pid exits */
   while( (ret=wait(&exitstat)) != pid && ret != -1)
     ;
 
+	if(is_int)
+	{
+		is_int = 0;
+		goto wait_more;
+	}
+
+	fg_count = 0;
   return(ret == -1 ? -1 : exitstat);
 }
 
@@ -149,6 +211,12 @@ char *prompt = "Command>"; /* prompt */
 
 main()
 {
+
+	act_int.sa_handler = sigint_handler;
+	sigemptyset(&act_int.sa_mask);
+	sigaddset(&act_int.sa_mask, SIGINT);
+	sigaction(SIGINT, &act_int, 0);
+
   while(userin(prompt) != EOF)
     procline();
 }

@@ -1,6 +1,7 @@
 /* smallsh.h - defs for smallsh command processor */
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define EOL 1     /* end of line */
 #define ARG 2     /* normal argument */
