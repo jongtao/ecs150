@@ -1,5 +1,6 @@
-#include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <signal.h>
 #include <stdio.h>
 
@@ -38,6 +39,8 @@ int main(void)
 				kill(pid1, SIGALRM);
 				kill(pid2, SIGALRM);
 			} // for loop 5 times
+
+			sleep(1);
 		} // if parent
 
 	return 0;
