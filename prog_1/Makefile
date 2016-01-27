@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 
 all: pipetest AlrmTest directory_traverse_breadth_first process_tree smallsh warm
 
@@ -9,8 +9,8 @@ pipetest:
 AlrmTest:
 	@echo $@ not yet written
 
-directory_traverse_breadth_first:
-	@echo $@ not yet written
+directory_traverse_breadth_first: directory_traverse_breadth_first.c
+	$(CC) $(CFLAGS) $< -o $@
 
 process_tree: process_tree.c
 	$(CC) $(CFLAGS) $< -o $@
