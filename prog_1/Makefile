@@ -24,4 +24,5 @@ warm: warm.c
 
 .PHONY: clean
 clean:
-	rm -f *.o core
+	rm -f *.o core pipetest \
+	AlrmTest directory_traverse_breadth_first process_tree smallsh warm

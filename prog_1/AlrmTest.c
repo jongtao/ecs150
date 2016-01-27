@@ -41,6 +41,8 @@ int main(void)
 			} // for loop 5 times
 
 			sleep(1);
+			kill(pid1, SIGTERM);
+			kill(pid2, SIGTERM);
 		} // if parent
 
 	return 0;
