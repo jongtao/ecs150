@@ -1,10 +1,10 @@
 CC=cc
 CFLAGS=-Wall -g
 
-all: pipetest AlrmTest directory_traverse_breadth_first process_tree smallsh warm
+all: pipe_test AlrmTest directory_traverse_breadth_first process_tree smallsh warm
 
-pipetest:
-	@echo $@ not yet written
+pipe_test: pipe_test.c
+	$(CC) $(CFLAGS) $< -o $@
 
 AlrmTest: AlrmTest.c
 	$(CC) $(CFLAGS) $< -o $@
@@ -24,5 +24,5 @@ warm: warm.c
 
 .PHONY: clean
 clean:
-	rm -f *.o core pipetest \
+	rm -f *.o core pipe_test \
 	AlrmTest directory_traverse_breadth_first process_tree smallsh warm
