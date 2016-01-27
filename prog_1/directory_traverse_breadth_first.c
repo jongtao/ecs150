@@ -5,7 +5,6 @@
 
 #define MAX_Q_LENGTH 999999
 
-/* element is copied into new memory*/
 void enqueue(char** queue, int* head, int* tail, char* element)
 {
 	queue[*tail] = element; // enqueue
@@ -47,12 +46,12 @@ void directory_dfs(char* start_path, char* target)
 	int found = 0;
 	int is_root = 0;
 
-	int i;
 
 	if(!strcmp(start_path, "/")) // if is root case
 		is_root = 1;
 	else // else not root
 	{
+		int i;
 		for(i=0; start_path[i] != '\0'; i++) // find terminating 0
 			;
 		if(start_path[i-1] == '/')
@@ -121,14 +120,12 @@ void directory_dfs(char* start_path, char* target)
 
 
 
-const char usage_str[] = "Usage: Path to print. Defaults to PWD\n";
-
 int main(int argc, char** argv)
 {
 	if(argc == 3) // two arguments
 		directory_dfs(argv[1], argv[2]);
 	else // else error
-		printf(usage_str);
+		printf("Usage: Path to search. File name.\n");
 
 	return 0;
 } // main()
