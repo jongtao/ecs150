@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-Wall -Wextra -Wpedantic -g
+CFLAGS=-Wall -Wextra -Wpedantic -Wno-unused-parameter -g
 
 all: pipe_test AlrmTest directory_traverse_breadth_first process_tree smallsh warm
 
