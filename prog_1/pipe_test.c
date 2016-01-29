@@ -44,7 +44,6 @@ int main(void)
 
 	int pipefd[3][2];
 	char buf[BSIZE];
-	const char please_str[] = "Please enter a string: ";
 
 	if(pipe(pipefd[0]) == -1)
 		exit(1);
@@ -57,8 +56,7 @@ int main(void)
 
 	if(!fork())
 	{
-		printf("\nI am process P1 with PID %d.\n", getpid());
-		write(1, please_str, strlen(please_str));
+		printf("\nI am process P1 with PID %d.\nPlease enter a string: ", getpid());
 		scanf("%s", buf);
 		write(pipefd[1][1], buf, BSIZE);
 
