@@ -1,3 +1,4 @@
+/* Problem 5: smallsh */
 #include "smallsh.h" /* include file for example */
 #include <stdlib.h>
 
