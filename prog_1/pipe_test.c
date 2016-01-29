@@ -57,7 +57,7 @@ int main(void)
 	if(!fork())
 	{
 		printf("\nI am process P1 with PID %d.\nPlease enter a string: ", getpid());
-		scanf("%s", buf);
+		scanf("%[^\n]", buf);
 		write(pipefd[1][1], buf, BSIZE);
 
 		read(pipefd[0][0], buf, BSIZE);
