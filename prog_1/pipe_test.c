@@ -42,6 +42,7 @@ int main(void)
 	sigfillset(&act.sa_mask);
 	sigaction(SIGUSR1, &act, 0);
 
+	pid_t child2, child3;
 	int pipefd[3][2];
 	char buf[BSIZE];
 
@@ -65,10 +66,9 @@ int main(void)
 		printf("I received: '%s'\n", buf);
 		printf("\nI am process P1 with PID %d.\n"
 			"I am about to die\n", getpid());
-		kill(0, SIGUSR1);	
 	} // process 1
 	else
-		if(!fork())
+		if((child2 = fork()) == 0)
 		{
 			read(pipefd[1][0], buf, BSIZE);
 			printf("\nI am process P2 with PID %d.\n", getpid());
@@ -82,7 +82,7 @@ int main(void)
 				"I am about to die\n", getpid());
 		} // process 2
 		else
-			if(!fork())
+			if((child3 = fork()) == 0)
 			{
 				read(pipefd[2][0], buf, BSIZE);
 				printf("\nI am process P3 with PID %d.\n", getpid());
@@ -98,7 +98,9 @@ int main(void)
 			else
 			{
 				wait(NULL);
+				kill(child2, SIGUSR1);
 				wait(NULL);
+				kill(child3, SIGUSR1);
 				wait(NULL);
 			} // origin process
 
