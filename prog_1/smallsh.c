@@ -4,8 +4,7 @@
 
 
 static struct sigaction act_int = {0};
-static struct sigaction act_chld = {0};
-static struct sigaction oact = {0};
+static struct sigaction act_quit = {0};
 static sigset_t mask;
 
 static int is_int = 0;
@@ -17,7 +16,31 @@ static int fg_pid = 0;
 void sigint_handler(int signo)
 {
 	is_int = 1;
-	char c,d;
+	char c;
+	
+	if(fg_count > 0)
+	{
+		printf("Are you sure you want to kill the child %d? (Y) ", fg_pid);
+		fflush(stdout);
+		c = getchar();
+		while(getchar() != '\n')
+			;
+		if(c == 'Y')
+		{
+			kill(fg_pid, SIGTERM);
+			is_int = 0;
+			fg_count = 0;
+		}
+	}
+
+} // sigint_handler
+
+
+
+void sigquit_handler(int signo)
+{
+	is_int = 1;
+	char c;
 	
 	if(fg_count > 0)
 	{
@@ -140,6 +163,7 @@ int where;
   if(pid == 0){
 		sigemptyset(&mask);
 		sigaddset(&mask, SIGINT);
+		sigaddset(&mask, SIGQUIT);
 		sigprocmask(SIG_BLOCK, &mask, NULL);
 
     execvp(*cline, cline);
@@ -217,6 +241,11 @@ main()
 	sigemptyset(&act_int.sa_mask);
 	sigaddset(&act_int.sa_mask, SIGINT);
 	sigaction(SIGINT, &act_int, 0);
+
+	act_quit.sa_handler = sigquit_handler;
+	sigemptyset(&act_quit.sa_mask);
+	sigaddset(&act_quit.sa_mask, SIGQUIT);
+	sigaction(SIGQUIT, &act_quit, 0);
 
   while(userin(prompt) != EOF)
     procline();
